@@ -64,6 +64,9 @@ function App() {
 
   const handleFilterSubmit = (e) => {
     e.preventDefault()
+    // Clear client-side filters when performing server-side search
+    setMethodFilter('')
+    setPathDropdownFilter('')
     fetchWebhooks(1)
   }
 
@@ -123,7 +126,12 @@ function App() {
                 {pathFilter && (
                   <button
                     type="button"
-                    onClick={() => { setPathFilter(''); fetchWebhooks(1); }}
+                    onClick={() => {
+                      setPathFilter('')
+                      setMethodFilter('')
+                      setPathDropdownFilter('')
+                      fetchWebhooks(1)
+                    }}
                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
                   >
                     Clear
@@ -155,7 +163,7 @@ function App() {
                   >
                     <option value="">All</option>
                     {uniquePaths.map(path => (
-                      <option key={path} value={path}>/{path}</option>
+                      <option key={path} value={path}>{path}</option>
                     ))}
                   </select>
                 </div>
