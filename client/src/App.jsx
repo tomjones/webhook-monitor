@@ -115,7 +115,7 @@ function App() {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Webhook Monitor</h1>
+          <h1 className="text-3xl font-bold text-brand-800 mb-2">Webhook Monitor</h1>
           <p className="text-gray-600">
             Send webhooks to: <code className="bg-gray-200 px-2 py-1 rounded">{window.location.origin}/webhook/your-path</code>
           </p>
@@ -130,11 +130,11 @@ function App() {
                   placeholder="Search by path..."
                   value={pathFilter}
                   onChange={(e) => setPathFilter(e.target.value)}
-                  className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+                  className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-800 flex-1"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  className="px-4 py-2 bg-brand-800 text-white rounded-lg hover:bg-brand-900"
                 >
                   Search
                 </button>
@@ -158,7 +158,7 @@ function App() {
                   <select
                     value={methodFilter}
                     onChange={(e) => handleMethodFilterChange(e.target.value)}
-                    className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                    className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-800 text-sm bg-white"
                   >
                     <option value="">All</option>
                     {uniqueMethods.map(method => (
@@ -172,7 +172,7 @@ function App() {
                   <select
                     value={pathDropdownFilter}
                     onChange={(e) => handlePathDropdownFilterChange(e.target.value)}
-                    className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                    className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-800 text-sm bg-white"
                   >
                     <option value="">All</option>
                     {uniquePaths.map(path => (
