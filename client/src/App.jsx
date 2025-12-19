@@ -14,6 +14,21 @@ function App() {
   const [methodFilter, setMethodFilter] = useState('')
   const [pathDropdownFilter, setPathDropdownFilter] = useState('')
 
+  // Clear server-side filter when client-side filters are applied
+  const handleMethodFilterChange = (value) => {
+    setMethodFilter(value)
+    if (value && pathFilter) {
+      setPathFilter('')
+    }
+  }
+
+  const handlePathDropdownFilterChange = (value) => {
+    setPathDropdownFilter(value)
+    if (value && pathFilter) {
+      setPathFilter('')
+    }
+  }
+
   const fetchWebhooks = useCallback(async (page = 1) => {
     try {
       setLoading(true)
@@ -142,7 +157,7 @@ function App() {
                   <label className="text-sm font-medium text-gray-700">Method:</label>
                   <select
                     value={methodFilter}
-                    onChange={(e) => setMethodFilter(e.target.value)}
+                    onChange={(e) => handleMethodFilterChange(e.target.value)}
                     className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                   >
                     <option value="">All</option>
@@ -156,7 +171,7 @@ function App() {
                   <label className="text-sm font-medium text-gray-700">Path:</label>
                   <select
                     value={pathDropdownFilter}
-                    onChange={(e) => setPathDropdownFilter(e.target.value)}
+                    onChange={(e) => handlePathDropdownFilterChange(e.target.value)}
                     className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                   >
                     <option value="">All</option>
@@ -177,7 +192,14 @@ function App() {
                 )}
 
                 <div className="text-sm text-gray-600 ml-auto">
-                  Showing {filteredWebhooks.length} of {webhooks.length} requests
+                  {(methodFilter || pathDropdownFilter) ? (
+                    <span>
+                      Showing {filteredWebhooks.length} of {webhooks.length} requests
+                      <span className="text-gray-500 italic"> (current page only)</span>
+                    </span>
+                  ) : (
+                    <span>Showing {webhooks.length} requests</span>
+                  )}
                 </div>
               </div>
             </div>
