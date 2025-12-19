@@ -1,0 +1,23 @@
+{
+  "name": "webhook-monitor",
+  "version": "1.0.0",
+  "description": "A simple webhook monitor that catches and displays webhooks from any source",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "build": "cd client && npm install && npm run build",
+    "postinstall": "npm run build",
+    "heroku-postbuild": "npm run build"
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "cors": "^2.8.5"
+  },
+  "keywords": ["webhook", "monitor", "express"],
+  "license": "MIT"
+}
