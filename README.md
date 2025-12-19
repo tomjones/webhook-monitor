@@ -15,6 +15,16 @@ npm start
 
 Open http://localhost:3000 to view the dashboard.
 
+## Building the Client
+
+To rebuild the React client (required after modifying client code or Tailwind styles):
+
+```bash
+npm run build
+```
+
+This command installs client dependencies and builds the production-ready client bundle.
+
 ## Sending Webhooks
 
 Send webhooks to any path under `/webhook/`:
