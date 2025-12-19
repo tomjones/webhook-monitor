@@ -14,10 +14,15 @@
     "node": "20.x"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^4.21.2",
-    "pg": "^8.13.1",
-    "cors": "^2.8.5"
+    "pg": "^8.13.1"
   },
-  "keywords": ["webhook", "monitor", "express"],
+  "keywords": [
+    "webhook",
+    "monitor",
+    "express"
+  ],
   "license": "MIT"
 }
