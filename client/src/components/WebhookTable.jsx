@@ -54,7 +54,7 @@ function WebhookTable({ webhooks, loading, onSelect, onDelete, pagination, onPag
             {webhooks.map((webhook) => (
               <tr
                 key={webhook.id}
-                className="hover:bg-gray-50 cursor-pointer"
+                className="hover:bg-brand-50 cursor-pointer"
                 onClick={() => onSelect(webhook)}
               >
                 <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
@@ -74,7 +74,7 @@ function WebhookTable({ webhooks, loading, onSelect, onDelete, pagination, onPag
                 <td className="px-4 py-3">
                   <button
                     onClick={(e) => { e.stopPropagation(); onDelete(webhook.id); }}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className="text-brand-800 hover:text-brand-900 text-sm font-medium"
                   >
                     Delete
                   </button>
@@ -94,7 +94,7 @@ function WebhookTable({ webhooks, loading, onSelect, onDelete, pagination, onPag
             <button
               onClick={() => onPageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
-              className="px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-3 py-1 rounded border border-brand-800 text-brand-800 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-50"
             >
               Previous
             </button>
@@ -104,7 +104,7 @@ function WebhookTable({ webhooks, loading, onSelect, onDelete, pagination, onPag
             <button
               onClick={() => onPageChange(pagination.page + 1)}
               disabled={pagination.page === pagination.totalPages}
-              className="px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-3 py-1 rounded border border-brand-800 text-brand-800 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-50"
             >
               Next
             </button>
