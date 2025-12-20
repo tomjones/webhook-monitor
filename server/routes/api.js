@@ -1,5 +1,5 @@
 const express = require('express');
-const { getWebhooks, getWebhookCount, getWebhookById, deleteWebhook } = require('../db');
+const { getWebhooks, getWebhookCount, getWebhookById, deleteWebhook, getUniqueWebhookTypes } = require('../db');
 
 const router = express.Router();
 
@@ -10,10 +10,11 @@ router.get('/webhooks', async (req, res) => {
     const page = parseInt(req.query.page, 10) || 1;
     const offset = (page - 1) * limit;
     const path = req.query.path || null;
+    const webhookType = req.query.webhook_type || null;
 
     const [webhooks, total] = await Promise.all([
-      getWebhooks({ limit, offset, path }),
-      getWebhookCount(path)
+      getWebhooks({ limit, offset, path, webhookType }),
+      getWebhookCount(path, webhookType)
     ]);
 
     res.json({
@@ -60,6 +61,17 @@ router.delete('/webhooks/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting webhook:', error);
     res.status(500).json({ error: 'Failed to delete webhook' });
+  }
+});
+
+// Get unique webhook types
+router.get('/webhook-types', async (req, res) => {
+  try {
+    const types = await getUniqueWebhookTypes();
+    res.json(types);
+  } catch (error) {
+    console.error('Error fetching webhook types:', error);
+    res.status(500).json({ error: 'Failed to fetch webhook types' });
   }
 });
 

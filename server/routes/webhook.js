@@ -1,5 +1,6 @@
 const express = require('express');
 const { insertWebhook } = require('../db');
+const { extractWebhookType } = require('../utils/extractWebhookType');
 
 const router = express.Router();
 
@@ -8,6 +9,9 @@ router.all('/*', async (req, res) => {
   try {
     // Extract the path after /webhook/
     const webhookPath = req.params[0] || 'default';
+
+    // Extract webhook type from body or headers
+    const webhookType = extractWebhookType(req.body, req.headers);
 
     // Get client IP (handle proxies like Heroku)
     const sourceIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
@@ -21,16 +25,18 @@ router.all('/*', async (req, res) => {
       headers: req.headers,
       body: req.body,
       queryParams: req.query,
-      sourceIp
+      sourceIp,
+      webhookType
     });
 
-    console.log(`Webhook received: ${req.method} /webhook/${webhookPath}`);
+    console.log(`Webhook received: ${req.method} /webhook/${webhookPath} [${webhookType}]`);
 
     res.status(200).json({
       success: true,
       message: 'Webhook received',
       id: webhook.id,
       path: webhookPath,
+      type: webhookType,
       timestamp: webhook.created_at
     });
   } catch (error) {

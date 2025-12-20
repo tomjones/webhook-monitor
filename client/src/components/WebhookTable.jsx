@@ -45,6 +45,7 @@ function WebhookTable({ webhooks, loading, onSelect, onDelete, pagination, onPag
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Path</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Body Preview</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -63,6 +64,11 @@ function WebhookTable({ webhooks, loading, onSelect, onDelete, pagination, onPag
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 text-xs font-medium rounded ${getMethodColor(webhook.method)}`}>
                     {webhook.method}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="px-2 py-1 bg-blue-900 text-white rounded text-xs font-medium">
+                    {webhook.webhook_type || 'unknown'}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm font-mono text-gray-900">
