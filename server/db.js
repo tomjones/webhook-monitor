@@ -30,10 +30,6 @@ async function initializeDatabase() {
       CREATE INDEX IF NOT EXISTS idx_webhooks_path ON webhooks(path)
     `);
 
-    await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_webhooks_type ON webhooks(webhook_type)
-    `);
-
     // Add webhook_type column if it doesn't exist (for existing databases)
     await client.query(`
       DO $$
@@ -43,9 +39,13 @@ async function initializeDatabase() {
           WHERE table_name = 'webhooks' AND column_name = 'webhook_type'
         ) THEN
           ALTER TABLE webhooks ADD COLUMN webhook_type VARCHAR(255);
-          CREATE INDEX idx_webhooks_type ON webhooks(webhook_type);
         END IF;
       END $$;
+    `);
+
+    // Create webhook_type index (after ensuring column exists)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_webhooks_type ON webhooks(webhook_type)
     `);
 
     console.log('Database initialized successfully');
