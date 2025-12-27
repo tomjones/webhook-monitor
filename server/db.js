@@ -118,7 +118,8 @@ async function deleteWebhook(id) {
 
 async function deleteOldWebhooks(days = 90) {
   const result = await pool.query(
-    `DELETE FROM webhooks WHERE created_at < NOW() - INTERVAL '${days} days' RETURNING id`
+    `DELETE FROM webhooks WHERE created_at < NOW() - INTERVAL $1 RETURNING id`,
+    [`${days} days`]
   );
   return result.rowCount;
 }
