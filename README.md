@@ -37,6 +37,44 @@ curl -X POST http://localhost:3000/webhook/stripe/payments \
 
 The path can be anything you want (e.g., `/webhook/paypal`, `/webhook/github/push`).
 
+## Webhook Type Detection
+
+The app automatically detects webhook types from common providers by inspecting:
+
+**Body fields** (checked in order):
+- `type` - Used by Stripe, Clerk, and others
+- `event` - Common generic field
+- `event_type` - Alternative naming convention
+- `action` - Used by GitHub for some events
+- `kind` - Alternative naming convention
+
+**Headers** (checked if body fields not found):
+- `X-GitHub-Event` - GitHub webhooks
+- `X-Shopify-Topic` - Shopify webhooks
+- `X-Event-Type` - Generic event type header
+- `X-Event-Name` - Alternative event name header
+
+If no type is detected, webhooks are marked as `unknown`.
+
+### Filtering by Type
+
+The dashboard includes a type filter dropdown that shows all detected webhook types. You can:
+- Filter webhooks by type to see only specific events
+- Combine type filtering with path and method filters
+- View the webhook type in the dashboard table
+
+### API Endpoints
+
+Get unique webhook types:
+```bash
+curl http://localhost:3000/api/webhook-types
+```
+
+Filter webhooks by type:
+```bash
+curl http://localhost:3000/api/webhooks?webhook_type=payment.success
+```
+
 ## Deploy to Heroku
 
 ```bash
