@@ -17,6 +17,7 @@ async function initializeDatabase() {
         body JSONB,
         query_params JSONB,
         source_ip VARCHAR(45),
+        webhook_type VARCHAR(255),
         created_at TIMESTAMP DEFAULT NOW()
       )
     `);
@@ -29,46 +30,76 @@ async function initializeDatabase() {
       CREATE INDEX IF NOT EXISTS idx_webhooks_path ON webhooks(path)
     `);
 
+    // Add webhook_type column if it doesn't exist (for existing databases)
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = 'webhooks' AND column_name = 'webhook_type'
+        ) THEN
+          ALTER TABLE webhooks ADD COLUMN webhook_type VARCHAR(255);
+        END IF;
+      END $$;
+    `);
+
+    // Create webhook_type index (after ensuring column exists)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_webhooks_type ON webhooks(webhook_type)
+    `);
+
     console.log('Database initialized successfully');
   } finally {
     client.release();
   }
 }
 
-async function insertWebhook({ path, method, headers, body, queryParams, sourceIp }) {
+async function insertWebhook({ path, method, headers, body, queryParams, sourceIp, webhookType }) {
   const result = await pool.query(
-    `INSERT INTO webhooks (path, method, headers, body, query_params, source_ip)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO webhooks (path, method, headers, body, query_params, source_ip, webhook_type)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
-    [path, method, JSON.stringify(headers), JSON.stringify(body), JSON.stringify(queryParams), sourceIp]
+    [path, method, JSON.stringify(headers), JSON.stringify(body), JSON.stringify(queryParams), sourceIp, webhookType]
   );
   return result.rows[0];
 }
 
-async function getWebhooks({ limit = 50, offset = 0, path = null }) {
-  let query = 'SELECT * FROM webhooks';
+async function getWebhooks({ limit = 50, offset = 0, path = null, webhookType = null }) {
+  let query = 'SELECT * FROM webhooks WHERE 1=1';
   const params = [];
+  let paramCount = 0;
 
   if (path) {
-    query += ' WHERE path LIKE $1';
     params.push(`%${path}%`);
+    query += ` AND path LIKE $${++paramCount}`;
+  }
+
+  if (webhookType) {
+    params.push(webhookType);
+    query += ` AND webhook_type = $${++paramCount}`;
   }
 
   query += ' ORDER BY created_at DESC';
-  query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+  query += ` LIMIT $${++paramCount} OFFSET $${++paramCount}`;
   params.push(limit, offset);
 
   const result = await pool.query(query, params);
   return result.rows;
 }
 
-async function getWebhookCount(path = null) {
-  let query = 'SELECT COUNT(*) FROM webhooks';
+async function getWebhookCount(path = null, webhookType = null) {
+  let query = 'SELECT COUNT(*) FROM webhooks WHERE 1=1';
   const params = [];
+  let paramCount = 0;
 
   if (path) {
-    query += ' WHERE path LIKE $1';
     params.push(`%${path}%`);
+    query += ` AND path LIKE $${++paramCount}`;
+  }
+
+  if (webhookType) {
+    params.push(webhookType);
+    query += ` AND webhook_type = $${++paramCount}`;
   }
 
   const result = await pool.query(query, params);
@@ -87,9 +118,17 @@ async function deleteWebhook(id) {
 
 async function deleteOldWebhooks(days = 90) {
   const result = await pool.query(
-    `DELETE FROM webhooks WHERE created_at < NOW() - INTERVAL '${days} days' RETURNING id`
+    `DELETE FROM webhooks WHERE created_at < NOW() - INTERVAL $1 RETURNING id`,
+    [`${days} days`]
   );
   return result.rowCount;
+}
+
+async function getUniqueWebhookTypes() {
+  const result = await pool.query(
+    'SELECT DISTINCT webhook_type FROM webhooks WHERE webhook_type IS NOT NULL ORDER BY webhook_type'
+  );
+  return result.rows.map(row => row.webhook_type);
 }
 
 module.exports = {
@@ -100,5 +139,6 @@ module.exports = {
   getWebhookCount,
   getWebhookById,
   deleteWebhook,
-  deleteOldWebhooks
+  deleteOldWebhooks,
+  getUniqueWebhookTypes
 };
